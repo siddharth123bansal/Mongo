@@ -1,5 +1,4 @@
-FROM eclipse-temurin:20-jdk-alpine
-VOLUME /temp
-COPY target/*.jar app.jar
-ENTRYPOINT ["java","-jar","/mongo.jar"]
+FROM openjdk:20
+Add ./MongoDB.jar MongoDB.jar
+ENTRYPOINT ["java","-jar","MongoDB.jar"]
 EXPOSE 8080
