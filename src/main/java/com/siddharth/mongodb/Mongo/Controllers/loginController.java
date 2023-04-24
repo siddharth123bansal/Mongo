@@ -25,6 +25,7 @@ public class loginController {
         return "Data inseted";
     }
     @PutMapping(value = "/update/{id}")
+    //helloWorld
     private String updateData(@PathVariable int id,@RequestBody Login login){
         Login up=loginRepo.findById(id).get();
         up.setUsername(login.getUsername());
