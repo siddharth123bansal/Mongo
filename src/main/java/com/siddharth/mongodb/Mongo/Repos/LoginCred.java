@@ -6,5 +6,4 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import java.util.Optional;
 
 public interface LoginCred extends MongoRepository<LoginModel,String> {
-    Optional<LoginModel> findByEmail(String email);
-}
+    Optional<LoginModel> findByEmail(String email);}
