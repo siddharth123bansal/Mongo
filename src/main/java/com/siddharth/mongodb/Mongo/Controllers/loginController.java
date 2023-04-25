@@ -23,15 +23,6 @@ public class loginController {
     private final String secretKey = "lIlBxya5XVsmeDCoUl6vHhdIESMB6sQ#";
     private final String algorithm = "AES";
 
-    @GetMapping(value = "/login/{id}")
-    public Optional<LoginModel> getDataById(@PathVariable String id)  {
-        if(logincred.findByEmail(id)!=null){
-            return logincred.findByEmail(id);
-        }else{
-            return null;
-        }
-    }
-
     @GetMapping(value = "/getdata")
     public List<Login> getData(){
         return loginRepo.findAll();
@@ -62,7 +53,14 @@ public class loginController {
         loginRepo.deleteById(id);
         return "deleted success";
     }
-
+    @GetMapping(value = "/login/{id}")
+    public Optional<LoginModel> getDataById(@PathVariable String id)  {
+        if(logincred.findByEmail(id)!=null){
+            return logincred.findByEmail(id);
+        }else{
+            return null;
+        }
+    }
     @GetMapping(value = "/")
     public String welCome()
     {
