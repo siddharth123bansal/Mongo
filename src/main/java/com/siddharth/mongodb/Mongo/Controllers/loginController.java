@@ -25,19 +25,6 @@ public class loginController {
 
     @GetMapping(value = "/login/{id}")
     public Optional<LoginModel> getDataById(@PathVariable String id)  {
-        //Login up =loginRepo.findById(id).get();
-//        try {
-//            String d=decrypt(logincred.findById(id).get().getPassword());
-//            logincred.findById(id).get().setPassword(d);
-//            return logincred.findById(id);
-//        } catch (Exception e) {
-//            throw new RuntimeException(e);
-//        }
-//        if(up.getEmail()==login.getEmail() && d== login.getPassword()){
-//            return "LogedIn success";
-//        }else{
-//            return "Wrong Email or password";
-//        }
         if(logincred.findByEmail(id)!=null){
             return logincred.findByEmail(id);
         }else{
