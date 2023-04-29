@@ -1,17 +1,20 @@
 package com.siddharth.mongodb.Mongo.Controllers;
+import com.mongodb.DuplicateKeyException;
 import com.siddharth.mongodb.Mongo.Models.Login;
 import com.siddharth.mongodb.Mongo.Models.LoginModel;
 import com.siddharth.mongodb.Mongo.Repos.LoginCred;
 import com.siddharth.mongodb.Mongo.Repos.LoginRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Base64;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import java.util.List;
-import java.util.Optional;
 import java.util.Random;
 
 @RestController
@@ -20,7 +23,7 @@ public class loginController {
     private LoginRepo loginRepo;
     @Autowired
     private LoginCred logincred;
-    private final String secretKey = "lIlBxya5XVsmeDCoUl6vHhdIESMB6sQ#";
+    private final String secretKey = "lIlBxya5XVsmeDCoUl6vHhdIESMB6s==";
     private final String algorithm = "AES";
 
     @GetMapping(value = "/getdata")
@@ -28,15 +31,20 @@ public class loginController {
         return loginRepo.findAll();
     }
     @PostMapping(value = "/save")
-    private String insertdata(Login log) throws Exception {
-        Random random = new Random();
-        long randomNumber = (long) (random.nextDouble() * Math.pow(10, 16));
-        int randomInt = (int) (randomNumber % Integer.MAX_VALUE);
-        log.setId(randomInt);
-        String e=encrypt(log.getPassword().toString());
-        log.setPassword(e);
-        loginRepo.save(log);
-        return "Data inseted";
+    private ResponseEntity<String> insertdata(Login log) throws Exception {
+        try {
+            Random random = new Random();
+            long randomNumber = (long) (random.nextDouble() * Math.pow(10, 16));
+            int randomInt = (int) (randomNumber % Integer.MAX_VALUE);
+            log.setId(randomInt);
+            String e=encrypt(log.getPassword().toString());
+            log.setPassword(e);
+            loginRepo.save(log);
+            return ResponseEntity.ok("User created successfully");
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.valueOf(200))
+                    .body(" User Already exists ");
+        }
     }
     @PutMapping(value = "/update/{id}")
     //helloWorld
@@ -53,12 +61,24 @@ public class loginController {
         loginRepo.deleteById(id);
         return "deleted success";
     }
-    @GetMapping(value = "/login/{id}")
-    public Optional<LoginModel> getDataById(@PathVariable String id)  {
-        if(logincred.findByEmail(id)!=null){
-            return logincred.findByEmail(id);
-        }else{
-            return null;
+    @GetMapping(value = "/login")
+    public String getDataById(@RequestBody LoginModel loginmodel)  {
+        if(logincred.findByEmail(loginmodel.getEmail())!=null){
+            try {
+                String dec=decrypt(logincred.findByEmail(loginmodel.getEmail()).get().getPassword().toString());
+                String pass=loginmodel.getPassword().toString();
+                if(pass.equals(dec)){
+                    return " login Success ";
+                }else{
+
+                    return " Wrong password ";
+                }
+            } catch (Exception e) {
+                return "User does not exists";
+            }
+
+        }else{//not null check
+            return "User does not exists";
         }
     }
     @GetMapping(value = "/")
