@@ -23,7 +23,7 @@ public class loginController {
     private LoginRepo loginRepo;
     @Autowired
     private LoginCred logincred;
-    private final String secretKey = "lIlBxya5XVsmeDCoUl6vHhdIESMB6s==";
+    private final String secretKey = "lIlBxya5XVsmeDCoUl6vHhdIESMB6sQ#";
     private final String algorithm = "AES";
 
     @GetMapping(value = "/getdata")
