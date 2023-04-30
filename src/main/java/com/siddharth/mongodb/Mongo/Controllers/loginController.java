@@ -2,6 +2,7 @@ package com.siddharth.mongodb.Mongo.Controllers;
 import com.mongodb.DuplicateKeyException;
 import com.siddharth.mongodb.Mongo.Models.Login;
 import com.siddharth.mongodb.Mongo.Models.LoginModel;
+import com.siddharth.mongodb.Mongo.Models.ResponseModel;
 import com.siddharth.mongodb.Mongo.Repos.LoginCred;
 import com.siddharth.mongodb.Mongo.Repos.LoginRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,23 +63,27 @@ public class loginController {
         return "deleted success";
     }
     @GetMapping(value = "/login")
-    public String getDataById(@RequestBody LoginModel loginmodel)  {
+    public ResponseModel getDataById(@RequestBody LoginModel loginmodel)  {
+        ResponseModel res=new ResponseModel();
         if(logincred.findByEmail(loginmodel.getEmail())!=null){
             try {
                 String dec=decrypt(logincred.findByEmail(loginmodel.getEmail()).get().getPassword().toString());
                 String pass=loginmodel.getPassword().toString();
                 if(pass.equals(dec)){
-                    return " login Success ";
+                    res.setMessage("Login Success");
+                    return res;
                 }else{
-
-                    return " Wrong password ";
+                    res.setMessage("Wrong password");
+                    return res;
                 }
             } catch (Exception e) {
-                return "User does not exists";
+                res.setMessage("User does not exists");
+                return res;
             }
 
         }else{//not null check
-            return "User does not exists";
+            res.setMessage("User does not exists");
+            return res;
         }
     }
     @GetMapping(value = "/")
