@@ -1,13 +1,10 @@
 package com.siddharth.mongodb.Mongo.Controllers;
-import com.mongodb.DuplicateKeyException;
 import com.siddharth.mongodb.Mongo.Models.Login;
 import com.siddharth.mongodb.Mongo.Models.LoginModel;
 import com.siddharth.mongodb.Mongo.Models.ResponseModel;
 import com.siddharth.mongodb.Mongo.Repos.LoginCred;
 import com.siddharth.mongodb.Mongo.Repos.LoginRepo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.charset.StandardCharsets;
@@ -32,7 +29,8 @@ public class loginController {
         return loginRepo.findAll();
     }
     @PostMapping(value = "/save")
-    private ResponseEntity<String> insertdata(Login log) throws Exception {
+    private ResponseModel insertdata(Login log) throws Exception {
+        ResponseModel rm=new ResponseModel();
         try {
             Random random = new Random();
             long randomNumber = (long) (random.nextDouble() * Math.pow(10, 16));
@@ -41,26 +39,41 @@ public class loginController {
             String e=encrypt(log.getPassword().toString());
             log.setPassword(e);
             loginRepo.save(log);
-            return ResponseEntity.ok("User created successfully");
+            rm.setMessage("User created successfully");
+            return rm;
         } catch (Exception ex) {
-            return ResponseEntity.status(HttpStatus.valueOf(200))
-                    .body(" User Already exists ");
+             rm.setMessage(ex.getMessage().toString());
+             return rm;
         }
     }
-    @PutMapping(value = "/update/{id}")
+    @PutMapping(value = "/update")
     //helloWorld
-    private String updateData(@PathVariable int id,@RequestBody Login login){
-        Login up=loginRepo.findById(id).get();
-        up.setUsername(login.getUsername());
-        up.setEmail(login.getEmail());
-        up.setPassword(login.getPassword());
-        loginRepo.save(up);
-        return "Record Updated of "+login.getUsername();
+    private ResponseModel updateData(@RequestBody Login login){
+        ResponseModel res=new ResponseModel();
+       try{
+           Login up=loginRepo.findByEmail(login.getEmail()).get();
+           up.setUsername(login.getUsername());
+           up.setEmail(login.getEmail());
+           up.setPassword(encrypt(login.getPassword()));
+           loginRepo.save(up);
+           res.setMessage("Record Updated of "+login.getUsername());
+           return res;
+       }catch (Exception e) {
+           res.setMessage(e.getMessage().toString());
+           return res;
+       }
     }
     @DeleteMapping(value = "/delete/{id}")
-    private String deleteData(@PathVariable int id){
-        loginRepo.deleteById(id);
-        return "deleted success";
+    private ResponseModel deleteData(@PathVariable String id){
+        ResponseModel res=new ResponseModel();
+        try{
+            loginRepo.deleteById(id);
+            res.setMessage("Deleted success");
+            return res;
+        }catch (Exception e){
+            res.setMessage(e.getMessage().toString());
+            return res;
+        }
     }
     @PostMapping(value = "/login")
     public ResponseModel getDataById(@RequestBody LoginModel loginmodel)  {
