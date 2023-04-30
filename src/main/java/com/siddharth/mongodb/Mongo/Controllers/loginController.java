@@ -29,7 +29,7 @@ public class loginController {
         return loginRepo.findAll();
     }
     @PostMapping(value = "/save")
-    private ResponseModel insertdata(Login log) throws Exception {
+    private ResponseModel insertdata(@RequestBody Login log) throws Exception {
         ResponseModel rm=new ResponseModel();
         try {
             Random random = new Random();
