@@ -80,7 +80,6 @@ public class loginController {
                 res.setMessage("User does not exists");
                 return res;
             }
-
         }else{//not null check
             res.setMessage("User does not exists");
             return res;
@@ -91,7 +90,6 @@ public class loginController {
     {
         return "welcome mongoDB";
     }
-
     public String encrypt(String data) throws Exception {
         Key key = new SecretKeySpec(secretKey.getBytes(), algorithm);
         Cipher cipher = Cipher.getInstance(algorithm);
