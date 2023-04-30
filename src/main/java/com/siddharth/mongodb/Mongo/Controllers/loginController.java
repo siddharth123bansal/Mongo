@@ -62,7 +62,7 @@ public class loginController {
         loginRepo.deleteById(id);
         return "deleted success";
     }
-    @GetMapping(value = "/login")
+    @PostMapping(value = "/login")
     public ResponseModel getDataById(@RequestBody LoginModel loginmodel)  {
         ResponseModel res=new ResponseModel();
         if(logincred.findByEmail(loginmodel.getEmail())!=null){
