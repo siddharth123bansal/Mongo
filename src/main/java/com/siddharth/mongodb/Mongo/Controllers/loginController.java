@@ -15,7 +15,6 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import java.util.List;
 import java.util.Random;
-
 @RestController
 public class loginController {
     @Autowired
@@ -24,7 +23,6 @@ public class loginController {
     private LoginCred logincred;
     private final String secretKey = "lIlBxya5XVsmeDCoUl6vHhdIESMB6sQ#";
     private final String algorithm = "AES";
-
     @GetMapping(value = "/getdata")
     public List<Login> getData(){
         return loginRepo.findAll();
@@ -63,7 +61,6 @@ public class loginController {
         }
         return filteredData;
     }
-
     @PutMapping(value = "/update")
     private ResponseModel updateData(@RequestBody Login login){
         ResponseModel res=new ResponseModel();
