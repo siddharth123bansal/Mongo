@@ -65,7 +65,6 @@ public class loginController {
     }
 
     @PutMapping(value = "/update")
-    //helloWorld
     private ResponseModel updateData(@RequestBody Login login){
         ResponseModel res=new ResponseModel();
        try{
