@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
+import java.util.ArrayList;
 import java.util.Base64;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
@@ -46,6 +47,23 @@ public class loginController {
              return rm;
         }
     }
+    @PostMapping(value = "/excludeemail/{email}")
+    private List<Login> excludeEmail(@PathVariable String email){
+        List<Login> data = loginRepo.findAll();
+        List<Login> filteredData = new ArrayList<>();
+        for (Login d : data) {
+            if (!d.getEmail().equals(email)) {
+                Login log=new Login();
+                log.setId(d.getId());
+                log.setUsername(d.getUsername());
+                log.setEmail(d.getEmail());
+                log.setPassword(d.getPassword());
+                filteredData.add(log);
+            }
+        }
+        return filteredData;
+    }
+
     @PutMapping(value = "/update")
     //helloWorld
     private ResponseModel updateData(@RequestBody Login login){
