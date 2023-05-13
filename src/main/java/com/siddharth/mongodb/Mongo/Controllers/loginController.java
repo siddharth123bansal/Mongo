@@ -1,12 +1,21 @@
 package com.siddharth.mongodb.Mongo.Controllers;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
 import com.siddharth.mongodb.Mongo.Models.Login;
 import com.siddharth.mongodb.Mongo.Models.LoginModel;
 import com.siddharth.mongodb.Mongo.Models.ResponseModel;
 import com.siddharth.mongodb.Mongo.Repos.LoginCred;
 import com.siddharth.mongodb.Mongo.Repos.LoginRepo;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.gridfs.GridFsTemplate;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.ArrayList;
@@ -18,6 +27,10 @@ import java.util.Random;
 @RestController
 public class loginController {
     @Autowired
+    private MongoTemplate mongoTemplate;
+    @Autowired
+    private GridFsTemplate gridFsTemplate;
+    @Autowired
     private LoginRepo loginRepo;
     @Autowired
     private LoginCred logincred;
@@ -28,7 +41,7 @@ public class loginController {
         return loginRepo.findAll();
     }
     @PostMapping(value = "/save")
-    private ResponseModel insertdata(@RequestBody Login log) throws Exception {
+    private Object insertdata(@RequestBody Login log) throws Exception {
         ResponseModel rm=new ResponseModel();
         try {
             Random random = new Random();
@@ -39,12 +52,33 @@ public class loginController {
             log.setPassword(e);
             loginRepo.save(log);
             rm.setMessage("User created successfully");
-            return rm;
+            return log;
         } catch (Exception ex) {
              rm.setMessage(ex.getMessage().toString());
              return rm;
         }
     }
+    @PostMapping(value = "/uploadFile")
+    private ResponseEntity<String> uploadFiles(@RequestParam("file")MultipartFile file){
+        String filename= file.getOriginalFilename();
+        byte[] bytes = new byte[0];
+        try {
+            bytes = file.getBytes();
+            DBObject metaData = new BasicDBObject();
+            metaData.put("contentType", file.getContentType());
+
+            ObjectId fileId = gridFsTemplate.store(
+                    new ByteArrayInputStream(bytes),
+                    filename,
+                    file.getContentType(),
+                    metaData
+            );
+            return ResponseEntity.ok(fileId.toHexString());
+        } catch (IOException e) {
+            return ResponseEntity.badRequest().body("can't process file");
+        }
+    }
+
     @PostMapping(value = "/excludeemail/{email}")
     private List<Login> excludeEmail(@PathVariable String email){
         List<Login> data = loginRepo.findAll();
