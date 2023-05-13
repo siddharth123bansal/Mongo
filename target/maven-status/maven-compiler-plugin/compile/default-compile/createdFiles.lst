@@ -1,7 +1,0 @@
-com\siddharth\mongodb\Mongo\Models\Login.class
-com\siddharth\mongodb\Mongo\Repos\LoginRepo.class
-com\siddharth\mongodb\Mongo\Models\LoginModel.class
-com\siddharth\mongodb\Mongo\Repos\LoginCred.class
-com\siddharth\mongodb\Mongo\MongoDbApplication.class
-com\siddharth\mongodb\Mongo\Controllers\loginController.class
-com\siddharth\mongodb\Mongo\Models\ResponseModel.class

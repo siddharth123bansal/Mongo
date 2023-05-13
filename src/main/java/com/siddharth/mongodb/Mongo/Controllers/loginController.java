@@ -58,26 +58,26 @@ public class loginController {
              return rm;
         }
     }
-    @PostMapping(value = "/uploadFile")
-    private ResponseEntity<String> uploadFiles(@RequestParam("file")MultipartFile file){
-        String filename= file.getOriginalFilename();
-        byte[] bytes = new byte[0];
-        try {
-            bytes = file.getBytes();
-            DBObject metaData = new BasicDBObject();
-            metaData.put("contentType", file.getContentType());
-
-            ObjectId fileId = gridFsTemplate.store(
-                    new ByteArrayInputStream(bytes),
-                    filename,
-                    file.getContentType(),
-                    metaData
-            );
-            return ResponseEntity.ok(fileId.toHexString());
-        } catch (IOException e) {
-            return ResponseEntity.badRequest().body("can't process file");
-        }
-    }
+//    @PostMapping(value = "/uploadFile")
+//    private ResponseEntity<String> uploadFiles(@RequestParam("file")MultipartFile file){
+//        String filename= file.getOriginalFilename();
+//        byte[] bytes = new byte[0];
+//        try {
+//            bytes = file.getBytes();
+//            DBObject metaData = new BasicDBObject();
+//            metaData.put("contentType", file.getContentType());
+//
+//            ObjectId fileId = gridFsTemplate.store(
+//                    new ByteArrayInputStream(bytes),
+//                    filename,
+//                    file.getContentType(),
+//                    metaData
+//            );
+//            return ResponseEntity.ok(fileId.toHexString());
+//        } catch (IOException e) {
+//            return ResponseEntity.badRequest().body("can't process file");
+//        }
+//    }
 
     @PostMapping(value = "/excludeemail/{email}")
     private List<Login> excludeEmail(@PathVariable String email){
@@ -124,7 +124,7 @@ public class loginController {
         }
     }
     @PostMapping(value = "/login")
-    public ResponseModel getDataById(@RequestBody LoginModel loginmodel)  {
+    public Object getDataById(@RequestBody LoginModel loginmodel)  {
         ResponseModel res=new ResponseModel();
         if(logincred.findByEmail(loginmodel.getEmail())!=null){
             try {
@@ -132,7 +132,7 @@ public class loginController {
                 String pass=loginmodel.getPassword().toString();
                 if(pass.equals(dec)){
                     res.setMessage("Login Success");
-                    return res;
+                    return loginRepo.findByEmail(loginmodel.getEmail());
                 }else{
                     res.setMessage("Wrong password");
                     return res;
