@@ -36,10 +36,14 @@ public class loginController {
     private LoginCred logincred;
     private final String secretKey = "lIlBxya5XVsmeDCoUl6vHhdIESMB6sQ#";
     private final String algorithm = "AES";
+
+
+
     @GetMapping(value = "/getdata")
     public List<Login> getData(){
         return loginRepo.findAll();
     }
+
     @PostMapping(value = "/save")
     private Object insertdata(@RequestBody Login log) throws Exception {
         ResponseModel rm=new ResponseModel();
@@ -58,27 +62,6 @@ public class loginController {
              return rm;
         }
     }
-//    @PostMapping(value = "/uploadFile")
-//    private ResponseEntity<String> uploadFiles(@RequestParam("file")MultipartFile file){
-//        String filename= file.getOriginalFilename();
-//        byte[] bytes = new byte[0];
-//        try {
-//            bytes = file.getBytes();
-//            DBObject metaData = new BasicDBObject();
-//            metaData.put("contentType", file.getContentType());
-//
-//            ObjectId fileId = gridFsTemplate.store(
-//                    new ByteArrayInputStream(bytes),
-//                    filename,
-//                    file.getContentType(),
-//                    metaData
-//            );
-//            return ResponseEntity.ok(fileId.toHexString());
-//        } catch (IOException e) {
-//            return ResponseEntity.badRequest().body("can't process file");
-//        }
-//    }
-
     @PostMapping(value = "/excludeemail/{email}")
     private List<Login> excludeEmail(@PathVariable String email){
         List<Login> data = loginRepo.findAll();
@@ -90,6 +73,7 @@ public class loginController {
                 log.setUsername(d.getUsername());
                 log.setEmail(d.getEmail());
                 log.setPassword(d.getPassword());
+                log.setToken(d.getToken());
                 filteredData.add(log);
             }
         }
@@ -103,11 +87,13 @@ public class loginController {
            up.setUsername(login.getUsername());
            up.setEmail(login.getEmail());
            up.setPassword(encrypt(login.getPassword()));
+           up.setToken(login.getToken());
            loginRepo.save(up);
            res.setMessage("Record Updated of "+login.getUsername());
            return res;
        }catch (Exception e) {
-           res.setMessage(e.getMessage().toString());
+           if(e.getMessage().toString().contains("Write operation error on server ac-f7p16yd-shard-00-02.btuzfix.mongodb.net:27017. Write error: WriteError{code=11000, message='E11000 duplicate key error collection: 64255fb5315d3245005b14c4_WeeChat.Login index: email_unique_index dup key:"))
+               res.setMessage("User Already Exist");
            return res;
        }
     }

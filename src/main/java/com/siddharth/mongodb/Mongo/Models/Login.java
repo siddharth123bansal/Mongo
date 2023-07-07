@@ -9,10 +9,16 @@ public class Login {
     private int id;
     private String username;
     private String email;
-
     private String password;
+    private String token;
 
+    public String getToken() {
+        return token;
+    }
 
+    public void setToken(String token) {
+        this.token = token;
+    }
 
     public int getId() {
         return id;
